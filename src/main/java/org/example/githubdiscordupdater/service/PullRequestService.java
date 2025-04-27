@@ -1,6 +1,9 @@
 package org.example.githubdiscordupdater.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import discord4j.common.util.Snowflake;
+import discord4j.core.DiscordClientBuilder;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -15,6 +18,7 @@ import org.example.githubdiscordupdater.repository.PullRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,45 +53,55 @@ public class PullRequestService {
     }
 
     public PullRequest savePullRequest(PullRequest pullRequest) {
-        MessageEntity messageEntity = messageRepository.findById(pullRequest.getPullRequestId()).orElse(null);
         DiscordManager manager = DiscordManager.getInstance();
-        TextChannel channel  = manager.getClient().getChannelById(Snowflake.of("553232797322706966")).ofType(TextChannel.class).block();
-        if (channel != null) {
-            String stateMessage = switch (pullRequest.getState()) {
-                case "open" -> "Status: \uD83D\uDFE9 OPEN";
-                case "closed" -> "Status: \uD83D\uDFE5 CLOSED";
-                default -> "Status: \uD83D\uDFE8 UNKNOWN";
-            };
 
-            EmbedCreateSpec embed = EmbedCreateSpec.builder()
-                    .thumbnail("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fgithub%2Fgithub_PNG80.png")
-                    .title("Pull Request Update")
-                    .description(pullRequest.getTitle())
-                    .color(Color.of(0x3498db))  // Set embed color (blue in this case)
-                    .author(pullRequest.getAuthor(), pullRequest.getAuthorUrl(), pullRequest.getAvatarUrl())
-                    .addField("Description", pullRequest.getDescription(), false)
-                    .addField("Link", pullRequest.getUrl(), true)
-                    .addField("", stateMessage, false)
-                    .footer("Last updated", "")
-                    .timestamp(Instant.now())
-                    .build();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(new File("secrets.json"));
+            String channelId = root.get("ChannelId").asText();
+            MessageEntity messageEntity = messageRepository.findById(pullRequest.getPullRequestId()).orElse(null);
+            TextChannel channel  = manager.getClient().getChannelById(Snowflake.of(channelId)).ofType(TextChannel.class).block();
+            if (channel != null) {
+                String stateMessage = switch (pullRequest.getState()) {
+                    case "open" -> "Status: \uD83D\uDFE9 OPEN";
+                    case "closed" -> "Status: \uD83D\uDFE5 CLOSED";
+                    default -> "Status: \uD83D\uDFE8 UNKNOWN";
+                };
 
-            if (messageEntity != null && messageEntity.getMessageId() != null) {
-                Message message = channel.getMessageById(Snowflake.of(messageEntity.getMessageId())).block();
-                MessageEditSpec messageEditSpec = MessageEditSpec.builder().addEmbed(embed).build();
-                message.edit(messageEditSpec).block();
-            } else {
-                Message message = channel.createMessage(embed).block();
-                MessageEntity newMessage = new MessageEntity();
-                newMessage.setPullRequestId(pullRequest.getPullRequestId());
-                newMessage.setMessageId(message.getId().asLong());
-                messageRepository.save(newMessage);
+                EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                        .thumbnail("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fgithub%2Fgithub_PNG80.png")
+                        .title("Pull Request Update")
+                        .description(pullRequest.getTitle())
+                        .color(Color.of(0x3498db))  // Set embed color (blue in this case)
+                        .author(pullRequest.getAuthor(), pullRequest.getAuthorUrl(), pullRequest.getAvatarUrl())
+                        .addField("Description", pullRequest.getDescription(), false)
+                        .addField("Link", pullRequest.getUrl(), true)
+                        .addField("", stateMessage, false)
+                        .footer("Last updated", "")
+                        .timestamp(Instant.now())
+                        .build();
+
+                if (messageEntity != null && messageEntity.getMessageId() != null) {
+                    Message message = channel.getMessageById(Snowflake.of(messageEntity.getMessageId())).block();
+                    MessageEditSpec messageEditSpec = MessageEditSpec.builder().addEmbed(embed).build();
+                    message.edit(messageEditSpec).block();
+                } else {
+                    Message message = channel.createMessage(embed).block();
+                    MessageEntity newMessage = new MessageEntity();
+                    newMessage.setPullRequestId(pullRequest.getPullRequestId());
+                    newMessage.setMessageId(message.getId().asLong());
+                    messageRepository.save(newMessage);
+                }
             }
-        }
 
-        PullRequestEntity pullRequestEntity = createEntityFromPullRequest(pullRequest);
-        pullRequestRepository.save(pullRequestEntity);
-        return pullRequest;
+            PullRequestEntity pullRequestEntity = createEntityFromPullRequest(pullRequest);
+            pullRequestRepository.save(pullRequestEntity);
+            return pullRequest;
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     public void deletePullRequest(Long id) {
