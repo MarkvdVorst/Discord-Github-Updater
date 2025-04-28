@@ -1,15 +1,18 @@
 package org.example.githubdiscordupdater.api.model.PullRequest;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PullRequestPayload {
     @Getter
     @Setter
     @JsonProperty("pull_request")
     private PullRequestBody pullRequestBody;
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     @Getter
     @Setter
     public static class PullRequestBody {
@@ -21,6 +24,7 @@ public class PullRequestPayload {
         private String url;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     @Getter
     @Setter
     public static class User {
