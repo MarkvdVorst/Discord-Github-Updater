@@ -84,9 +84,9 @@ public class PullRequestController {
                 body.getTitle(),
                 body.getBody(),
                 body.getUser().getLogin(),
-                body.getUser().getHtmlUrl(),
+                body.getUser().getUrl(),
                 body.getUser().getAvatarUrl(),
                 body.getState(),
-                body.getUrl());
+                body.getHtmlUrl());
     }
 }

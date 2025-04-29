@@ -21,7 +21,8 @@ public class PullRequestPayload {
         private String body;
         private User user;
         private String state;
-        private String url;
+        @JsonProperty("html_url")
+        private String htmlUrl;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -31,7 +32,6 @@ public class PullRequestPayload {
         private String login;
         @JsonProperty("avatar_url")
         private String avatarUrl;
-        @JsonProperty("html_url")
-        private String htmlUrl;
+        private String url;
     }
 }
