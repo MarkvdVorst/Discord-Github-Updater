@@ -78,7 +78,7 @@ public class PullRequestService {
                 if (pullRequest.getDescription() != null)
                     embedBuilder.addField("Description", pullRequest.getDescription(), false);
 
-                EmbedCreateSpec embed = embedBuilder.addField("Link", pullRequest.getHtmlUrl(), true)
+                EmbedCreateSpec embed = embedBuilder.addField("Link", pullRequest.getUrl(), true)
                         .addField("", stateMessage, false)
                         .footer("Last updated", "")
                         .timestamp(Instant.now())
@@ -119,7 +119,7 @@ public class PullRequestService {
         pullRequestEntity.setAuthorUrl(pullRequest.getAuthorUrl());
         pullRequestEntity.setAvatarUrl(pullRequest.getAvatarUrl());
         pullRequestEntity.setState(pullRequest.getState());
-        pullRequestEntity.setUrl(pullRequest.getHtmlUrl());
+        pullRequestEntity.setUrl(pullRequest.getUrl());
         return pullRequestEntity;
     }
 

@@ -56,7 +56,7 @@ public class PullRequestController {
             PullRequestPayload payload = mapper.readValue(rawPayload, PullRequestPayload.class);
             PullRequest pullRequest = createPullRequestFromBody(payload);
             pullRequestService.savePullRequest(pullRequest);
-            return ResponseEntity.ok(pullRequest.getPullRequestId() + " " + pullRequest.getTitle() + " " + pullRequest.getDescription() + " " + pullRequest.getAuthor() + " " + pullRequest.getState() + " " + pullRequest.getHtmlUrl());
+            return ResponseEntity.ok(pullRequest.getPullRequestId() + " " + pullRequest.getTitle() + " " + pullRequest.getDescription() + " " + pullRequest.getAuthor() + " " + pullRequest.getState() + " " + pullRequest.getUrl());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -84,7 +84,7 @@ public class PullRequestController {
                 body.getTitle(),
                 body.getBody(),
                 body.getUser().getLogin(),
-                body.getUser().getUrl(),
+                body.getUser().getHtmlUrl(),
                 body.getUser().getAvatarUrl(),
                 body.getState(),
                 body.getUrl());

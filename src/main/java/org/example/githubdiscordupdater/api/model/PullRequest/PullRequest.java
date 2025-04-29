@@ -1,6 +1,5 @@
 package org.example.githubdiscordupdater.api.model.PullRequest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +15,5 @@ public class PullRequest {
     private String authorUrl;
     private String avatarUrl;
     private String state;
-    @JsonProperty("html_url")
-    private String htmlUrl;
+    private String url;
 }

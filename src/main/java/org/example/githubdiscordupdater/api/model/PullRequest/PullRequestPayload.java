@@ -31,6 +31,7 @@ public class PullRequestPayload {
         private String login;
         @JsonProperty("avatar_url")
         private String avatarUrl;
-        private String url;
+        @JsonProperty("html_url")
+        private String htmlUrl;
     }
 }
