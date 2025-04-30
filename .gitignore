@@ -33,3 +33,4 @@ build/
 .vscode/
 /secrets.json
 /src/main/resources/application.properties
+/data
