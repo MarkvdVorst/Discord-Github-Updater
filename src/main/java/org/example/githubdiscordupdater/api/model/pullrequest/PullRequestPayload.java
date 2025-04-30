@@ -1,14 +1,19 @@
-package org.example.githubdiscordupdater.api.model.PullRequest;
+package org.example.githubdiscordupdater.api.model.pullrequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.example.githubdiscordupdater.api.model.util.ReviewStates;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@Setter
 public class PullRequestPayload {
-    @Getter
-    @Setter
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private Review review;
+
     @JsonProperty("pull_request")
     private PullRequestBody pullRequestBody;
 
@@ -33,5 +38,12 @@ public class PullRequestPayload {
         @JsonProperty("avatar_url")
         private String avatarUrl;
         private String url;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @Getter
+    @Setter
+    public static class Review {
+        private ReviewStates state;
     }
 }

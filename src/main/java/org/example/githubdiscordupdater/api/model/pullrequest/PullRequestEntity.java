@@ -1,13 +1,17 @@
-package org.example.githubdiscordupdater.api.model.PullRequest;
+package org.example.githubdiscordupdater.api.model.pullrequest;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
 @Getter
 @Setter
 @AllArgsConstructor
-public class PullRequest {
+public class PullRequestEntity {
+    @Id
     private Long pullRequestId;
     private String title;
     private String description;
@@ -16,4 +20,6 @@ public class PullRequest {
     private String avatarUrl;
     private String state;
     private String url;
+
+    public PullRequestEntity() {}
 }
