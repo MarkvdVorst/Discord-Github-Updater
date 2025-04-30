@@ -28,6 +28,7 @@ public class PullRequestPayload {
         private String state;
         @JsonProperty("html_url")
         private String htmlUrl;
+        private boolean merged;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

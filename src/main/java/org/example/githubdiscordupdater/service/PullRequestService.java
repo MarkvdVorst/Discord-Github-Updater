@@ -62,11 +62,14 @@ public class PullRequestService {
                         .author(pullRequest.getAuthor(), pullRequest.getAuthorUrl(), pullRequest.getAvatarUrl());
                 if (pullRequest.getDescription() != null)
                     embedBuilder.addField("Description", pullRequest.getDescription(), false);
-                EmbedCreateSpec embed = embedBuilder.addField("Link", pullRequest.getUrl(), true)
-                        .addField("", stateMessage, false)
-                        .footer("Last updated", "")
-                        .timestamp(Instant.now())
-                        .build();
+                embedBuilder.addField("Link", pullRequest.getUrl(), true)
+                        .addField("", stateMessage, false);
+                if (pullRequest.isMerged())
+                    embedBuilder.footer("Merged at", "");
+                else
+                    embedBuilder.footer("Last updated", "");
+                embedBuilder.timestamp(Instant.now());
+                EmbedCreateSpec embed = embedBuilder.build();
                 if (messageEntity != null && messageEntity.getMessageId() != null) {
                     Message message = channel.getMessageById(Snowflake.of(messageEntity.getMessageId())).block();
                     MessageEditSpec messageEditSpec = MessageEditSpec.builder().addEmbed(embed).build();
@@ -82,7 +85,13 @@ public class PullRequestService {
                 }
             }
             PullRequestEntity pullRequestEntity = createEntityFromPullRequest(pullRequest);
-            pullRequestRepository.save(pullRequestEntity);
+
+            if (pullRequest.isMerged() || pullRequest.getState() == "closed"){
+                pullRequestRepository.deleteById(pullRequest.getPullRequestId());
+                messageRepository.deleteById(messageEntity.getMessageId());
+            } else {
+                pullRequestRepository.save(pullRequestEntity);
+            }
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -91,11 +100,13 @@ public class PullRequestService {
     private static String getStateMessage(PullRequest pullRequest) {
         String stateMessage;
         if (pullRequest.getReview() != null && pullRequest.getReview().getState() != null && pullRequest.getReview().getState() == ReviewStates.CHANGES_REQUESTED) {
-            stateMessage = "Status: \uD83D\uDFE7 CHANGES REQUESTED";
+            stateMessage = "Status: \uD83D\uDFE5 CHANGES REQUESTED";
+        } else if (pullRequest.isMerged()) {
+            stateMessage = "Status: \uD83D\uDFEA MERGED";
         } else {
             stateMessage = switch (pullRequest.getState()) {
                 case "open" -> "Status: \uD83D\uDFE9 OPEN";
-                case "closed" -> "Status: \uD83D\uDFE5 CLOSED";
+                case "closed" -> "Status: \u2B1C CLOSED";
                 default -> "Status: \uD83D\uDFE8 UNKNOWN";
             };
         }

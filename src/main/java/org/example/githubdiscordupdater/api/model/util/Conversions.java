@@ -17,6 +17,7 @@ public class Conversions {
                 body.getUser().getAvatarUrl(),
                 body.getState(),
                 body.getHtmlUrl(),
+                payload.getPullRequestBody().isMerged(),
                 payload.getReview());
     }
 
@@ -42,6 +43,7 @@ public class Conversions {
                 pullRequestEntity.getAuthorUrl(),
                 pullRequestEntity.getAvatarUrl(),
                 pullRequestEntity.getState(),
-                pullRequestEntity.getUrl());
+                pullRequestEntity.getUrl(),
+                pullRequestEntity.isMerged());
     }
 }

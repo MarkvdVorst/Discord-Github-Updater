@@ -20,6 +20,7 @@ public class PullRequestEntity {
     private String avatarUrl;
     private String state;
     private String url;
+    private boolean merged;
 
     public PullRequestEntity() {}
 }

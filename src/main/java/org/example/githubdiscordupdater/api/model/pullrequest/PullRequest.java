@@ -16,9 +16,10 @@ public class PullRequest {
     private String avatarUrl;
     private String state;
     private String url;
+    private boolean merged;
     private PullRequestPayload.Review review;
 
-    public PullRequest(Long pullRequestId, String title, String description, String author, String authorUrl, String avatarUrl, String state, String url) {
+    public PullRequest(Long pullRequestId, String title, String description, String author, String authorUrl, String avatarUrl, String state, String url, boolean merged) {
         this.pullRequestId = pullRequestId;
         this.title = title;
         this.description = description;
@@ -27,5 +28,6 @@ public class PullRequest {
         this.avatarUrl = avatarUrl;
         this.state = state;
         this.url = url;
+        this.merged = merged;
     }
 }
